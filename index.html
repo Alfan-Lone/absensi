@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -54,6 +55,13 @@
       text-align: center;
       color: #6b7280;
       margin-bottom: 20px;
+    }
+
+    .date {
+      text-align: center;
+      color: #374151;
+      margin-bottom: 15px;
+      font-weight: bold;
     }
 
     label {
@@ -122,11 +130,6 @@
       color: white;
     }
 
-    .masuk {
-      background: #16a34a;
-      color: white;
-    }
-
     .pulang {
       background: #dc2626;
       color: white;
@@ -169,13 +172,6 @@
       color: #6b7280;
       font-size: 13px;
       margin-top: 18px;
-    }
-
-    .date {
-      text-align: center;
-      color: #374151;
-      margin-bottom: 15px;
-      font-weight: bold;
     }
   </style>
 </head>
@@ -232,31 +228,22 @@
       id="cameraBtn"
       onclick="ambilFoto()"
     >
-      📷 AMBIL FOTO SELFIE
-    </button>
-
-    <button
-      class="masuk"
-      id="masukBtn"
-      onclick="kirimAbsensi('masuk')"
-      disabled
-    >
-      🟢 ABSEN MASUK
+      📷 FOTO & OTOMATIS ABSEN MASUK
     </button>
 
     <button
       class="pulang"
       id="pulangBtn"
-      onclick="kirimAbsensi('pulang')"
-      disabled
+      onclick="ambilFotoPulang()"
     >
-      🔴 ABSEN PULANG
+      🔴 FOTO & ABSEN PULANG
     </button>
 
     <div id="status" class="status"></div>
 
     <div class="info">
-      Pastikan nama sudah benar sebelum melakukan absensi.
+      Foto pertama otomatis dicatat sebagai absen masuk.
+      Untuk pulang gunakan tombol merah.
     </div>
 
   </div>
@@ -266,7 +253,7 @@
 <script>
 
   // =====================================================
-  // MASUKKAN DATA SUPABASE ANDA DI SINI
+  // SUPABASE
   // =====================================================
 
   const SUPABASE_URL = "https://prcnxtzhukfopcfzyczm.supabase.co";
@@ -283,11 +270,17 @@
   // VARIABEL
   // =====================================================
 
-  const video = document.getElementById("video");
-  const canvas = document.getElementById("canvas");
-  const preview = document.getElementById("preview");
+  const video =
+    document.getElementById("video");
+
+  const canvas =
+    document.getElementById("canvas");
+
+  const preview =
+    document.getElementById("preview");
 
   let fotoBlob = null;
+  let sedangMengirim = false;
 
 
   // =====================================================
@@ -298,25 +291,26 @@
 
     const sekarang = new Date();
 
-    const tanggal = sekarang.toLocaleDateString(
-      "id-ID",
-      {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-      }
-    );
+    const tanggal =
+      sekarang.toLocaleDateString(
+        "id-ID",
+        {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        }
+      );
 
-    document.getElementById("tanggal").textContent =
-      tanggal;
+    document.getElementById("tanggal")
+      .textContent = tanggal;
   }
 
   tampilkanTanggal();
 
 
   // =====================================================
-  // AKTIFKAN KAMERA DEPAN
+  // KAMERA
   // =====================================================
 
   async function mulaiKamera() {
@@ -342,7 +336,7 @@
     } catch (error) {
 
       tampilkanStatus(
-        "Kamera tidak bisa dibuka. Pastikan izin kamera diberikan.",
+        "Kamera tidak bisa dibuka. Izinkan akses kamera pada browser.",
         "error"
       );
 
@@ -353,12 +347,14 @@
 
   // =====================================================
   // AMBIL FOTO
+  // OTOMATIS ABSEN MASUK
   // =====================================================
 
   function ambilFoto() {
 
     const nama =
-      document.getElementById("nama").value.trim();
+      document.getElementById("nama")
+        .value.trim();
 
     if (nama.length < 2) {
 
@@ -370,11 +366,66 @@
       return;
     }
 
+    if (sedangMengirim) {
+      return;
+    }
+
+    ambilFotoDariKamera("masuk");
+  }
+
+
+  // =====================================================
+  // FOTO PULANG
+  // =====================================================
+
+  function ambilFotoPulang() {
+
+    const nama =
+      document.getElementById("nama")
+        .value.trim();
+
+    if (nama.length < 2) {
+
+      tampilkanStatus(
+        "Masukkan nama terlebih dahulu.",
+        "error"
+      );
+
+      return;
+    }
+
+    if (sedangMengirim) {
+      return;
+    }
+
+    ambilFotoDariKamera("pulang");
+  }
+
+
+  // =====================================================
+  // AMBIL FOTO DARI KAMERA
+  // =====================================================
+
+  function ambilFotoDariKamera(jenis) {
+
     const context =
       canvas.getContext("2d");
 
-    const width = video.videoWidth;
-    const height = video.videoHeight;
+    const width =
+      video.videoWidth;
+
+    const height =
+      video.videoHeight;
+
+    if (!width || !height) {
+
+      tampilkanStatus(
+        "Kamera belum siap. Tunggu sebentar lalu coba lagi.",
+        "error"
+      );
+
+      return;
+    }
 
     canvas.width = width;
     canvas.height = height;
@@ -398,16 +449,8 @@
         preview.style.display =
           "block";
 
-        document.getElementById("masukBtn")
-          .disabled = false;
-
-        document.getElementById("pulangBtn")
-          .disabled = false;
-
-        tampilkanStatus(
-          "Foto berhasil diambil. Silakan pilih jenis absensi.",
-          "success"
-        );
+        // LANGSUNG KIRIM ABSENSI
+        kirimAbsensi(jenis);
 
       },
       "image/jpeg",
@@ -439,35 +482,32 @@
     if (!fotoBlob) {
 
       tampilkanStatus(
-        "Silakan ambil foto selfie terlebih dahulu.",
+        "Foto belum tersedia.",
         "error"
       );
 
       return;
     }
 
+    sedangMengirim = true;
 
-    const masukBtn =
-      document.getElementById("masukBtn");
+    document.getElementById("cameraBtn")
+      .disabled = true;
 
-    const pulangBtn =
-      document.getElementById("pulangBtn");
-
-    masukBtn.disabled = true;
-    pulangBtn.disabled = true;
-
+    document.getElementById("pulangBtn")
+      .disabled = true;
 
     tampilkanStatus(
-      "Mengirim absensi...",
+      "Mengirim foto dan menyimpan absensi...",
       "success"
     );
 
 
     try {
 
-      // -----------------------------------------------
-      // NAMA FILE FOTO
-      // -----------------------------------------------
+      // =================================================
+      // NAMA FILE
+      // =================================================
 
       const waktu =
         Date.now();
@@ -478,20 +518,25 @@
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-|-$/g, "");
 
+      const tanggal =
+        new Date()
+          .toISOString()
+          .slice(0, 10);
+
       const filePath =
-        new Date().toISOString().slice(0,10)
-        + "/"
-        + namaFile
-        + "-"
-        + jenis
-        + "-"
-        + waktu
-        + ".jpg";
+        tanggal +
+        "/" +
+        namaFile +
+        "-" +
+        jenis +
+        "-" +
+        waktu +
+        ".jpg";
 
 
-      // -----------------------------------------------
+      // =================================================
       // UPLOAD FOTO
-      // -----------------------------------------------
+      // =================================================
 
       const {
         error: uploadError
@@ -514,9 +559,9 @@
       }
 
 
-      // -----------------------------------------------
-      // SIMPAN DATA ABSENSI
-      // -----------------------------------------------
+      // =================================================
+      // SIMPAN ABSENSI
+      // =================================================
 
       const {
         error: insertError
@@ -530,77 +575,100 @@
           });
 
 
+      // Kalau database gagal,
+      // foto yang baru diupload ikut dihapus
+
       if (insertError) {
 
-        // Kalau database gagal, hapus foto
         await supabaseClient
           .storage
           .from("selfies")
-          .remove([filePath]);
+          .remove([
+            filePath
+          ]);
 
         throw insertError;
       }
 
 
-      // -----------------------------------------------
+      // =================================================
       // BERHASIL
-      // -----------------------------------------------
+      // =================================================
 
-      const teksJenis =
-        jenis === "masuk"
-          ? "ABSEN MASUK"
-          : "ABSEN PULANG";
+      if (jenis === "masuk") {
+
+        tampilkanStatus(
+          "✅ Absen masuk berhasil!",
+          "success"
+        );
+
+      } else {
+
+        tampilkanStatus(
+          "✅ Absen pulang berhasil!",
+          "success"
+        );
+
+      }
 
 
-      tampilkanStatus(
-        "✅ " + teksJenis +
-        " berhasil dicatat!",
-        "success"
-      );
+      // Reset foto
 
-
-      // Reset
       fotoBlob = null;
 
-      preview.style.display = "none";
+      preview.style.display =
+        "none";
 
-      document.getElementById("nama").value = "";
-
-      setTimeout(() => {
-
-        masukBtn.disabled = true;
-        pulangBtn.disabled = true;
-
-      }, 1000);
+      document.getElementById("nama")
+        .value = "";
 
 
     } catch (error) {
 
       console.error(error);
 
+      // ===============================================
+      // SUDAH ABSEN
+      // ===============================================
+
       if (
         error.code === "23505"
       ) {
 
-        tampilkanStatus(
-          "Nama tersebut sudah melakukan " +
-          jenis +
-          " hari ini.",
-          "error"
-        );
+        if (jenis === "masuk") {
+
+          tampilkanStatus(
+            "⚠️ Anda sudah melakukan absen masuk hari ini.",
+            "error"
+          );
+
+        } else {
+
+          tampilkanStatus(
+            "⚠️ Anda sudah melakukan absen pulang hari ini.",
+            "error"
+          );
+        }
 
       } else {
 
         tampilkanStatus(
-          "Gagal menyimpan absensi: " +
+          "❌ Gagal menyimpan absensi: " +
           error.message,
           "error"
         );
       }
 
-      masukBtn.disabled = false;
-      pulangBtn.disabled = false;
     }
+
+
+    sedangMengirim = false;
+
+    document.getElementById("cameraBtn")
+      .disabled = false;
+
+    document.getElementById("pulangBtn")
+      .disabled = false;
   }
 
 
@@ -616,7 +684,8 @@
     const status =
       document.getElementById("status");
 
-    status.textContent = pesan;
+    status.textContent =
+      pesan;
 
     status.className =
       "status " + tipe;
@@ -624,7 +693,7 @@
 
 
   // =====================================================
-  // MULAI
+  // START
   // =====================================================
 
   mulaiKamera();
@@ -633,3 +702,4 @@
 
 </body>
 </html>
+```
