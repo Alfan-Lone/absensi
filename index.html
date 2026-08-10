@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -18,7 +19,6 @@
       min-height: 100vh;
       font-family: Arial, sans-serif;
 
-      /* BACKGROUND GAMBAR SEKOLAH */
       background-image:
         linear-gradient(
           rgba(15, 23, 42, 0.72),
@@ -108,35 +108,6 @@
     input:focus,
     select:focus {
       border-color: #2563eb;
-    }
-
-    .location-box {
-      background: #eff6ff;
-      color: #1e40af;
-
-      border-radius: 12px;
-      padding: 12px;
-
-      margin-bottom: 15px;
-
-      text-align: center;
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    .location-loading {
-      color: #92400e;
-      background: #fef3c7;
-    }
-
-    .location-success {
-      color: #166534;
-      background: #dcfce7;
-    }
-
-    .location-error {
-      color: #991b1b;
-      background: #fee2e2;
     }
 
     .camera {
@@ -261,7 +232,7 @@
 
   <div class="card">
 
-    <!-- LOGO SEKOLAH -->
+    <!-- LOGO -->
     <div class="logo">
       <img src="SMAN 1 SKG.jfif" alt="Logo SMAN 1">
     </div>
@@ -274,12 +245,7 @@
 
     <div class="date" id="tanggal"></div>
 
-    <!-- LOKASI -->
-    <div id="locationStatus"
-         class="location-box location-loading">
-      📍 Memeriksa lokasi Anda...
-    </div>
-
+    <!-- NAMA -->
     <label for="nama">Nama</label>
 
     <input
@@ -289,6 +255,7 @@
       autocomplete="name"
     >
 
+    <!-- KELAS -->
     <label for="kelas">Kelas</label>
 
     <select id="kelas">
@@ -340,7 +307,6 @@
     </select>
 
     <!-- KAMERA -->
-
     <div class="camera">
 
       <video
@@ -363,8 +329,7 @@
       alt="Preview selfie"
     >
 
-    <!-- TOMBOL MASUK -->
-
+    <!-- ABSEN MASUK -->
     <button
       class="camera-btn"
       id="cameraBtn"
@@ -374,8 +339,7 @@
       📷 FOTO BUAT ABSEN MASUK
     </button>
 
-    <!-- TOMBOL PULANG -->
-
+    <!-- ABSEN PULANG -->
     <button
       class="pulang"
       id="pulangBtn"
@@ -388,8 +352,7 @@
     <div id="status" class="status"></div>
 
     <div class="info">
-      Absensi hanya dapat dilakukan jika berada
-      di area sekolah.
+      Pastikan nama dan kelas sudah benar sebelum melakukan absensi.
     </div>
 
   </div>
@@ -417,39 +380,6 @@ const supabaseClient =
 
 
 /* =====================================================
-   KOORDINAT SEKOLAH
-===================================================== */
-
-const SEKOLAH_LAT =
-  -7.091200000000;
-
-const SEKOLAH_LNG =
-  107.135900000000;
-
-
-/*
-   MAKSIMAL JARAK DARI SEKOLAH
-
-   100 meter
-*/
-
-const BATAS_JARAK =
-  100;
-
-
-/*
-   AKURASI GPS MAKSIMAL
-
-   Jika GPS mengatakan akurasinya
-   lebih buruk dari 150 meter,
-   lokasi dianggap tidak cukup akurat.
-*/
-
-const BATAS_AKURASI =
-  150;
-
-
-/* =====================================================
    VARIABEL
 ===================================================== */
 
@@ -466,22 +396,72 @@ let fotoBlob = null;
 
 let sedangMengirim = false;
 
-let lokasiSaatIni = null;
+
+/* =====================================================
+   WAKTU WIB
+===================================================== */
+
+function waktuWIB() {
+
+  const sekarang = new Date();
+
+  const formatter =
+    new Intl.DateTimeFormat(
+      "en-CA",
+      {
+        timeZone: "Asia/Jakarta",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      }
+    );
+
+  const bagian =
+    formatter.formatToParts(sekarang);
+
+  const nilai = {};
+
+  bagian.forEach(
+    function(item) {
+      nilai[item.type] = item.value;
+    }
+  );
+
+  return {
+    tanggal:
+      nilai.year +
+      "-" +
+      nilai.month +
+      "-" +
+      nilai.day,
+
+    jam:
+      nilai.hour +
+      ":" +
+      nilai.minute +
+      ":" +
+      nilai.second
+  };
+}
 
 
 /* =====================================================
-   TANGGAL
+   TANGGAL TAMPILAN
 ===================================================== */
 
 function tampilkanTanggal() {
 
-  const sekarang =
-    new Date();
+  const sekarang = new Date();
 
   const tanggal =
     sekarang.toLocaleDateString(
       "id-ID",
       {
+        timeZone: "Asia/Jakarta",
         weekday: "long",
         day: "numeric",
         month: "long",
@@ -489,276 +469,12 @@ function tampilkanTanggal() {
       }
     );
 
-  document.getElementById("tanggal")
-    .textContent = tanggal;
+  document.getElementById(
+    "tanggal"
+  ).textContent = tanggal;
 }
 
 tampilkanTanggal();
-
-
-/* =====================================================
-   HITUNG JARAK GPS
-===================================================== */
-
-function hitungJarak(
-  lat1,
-  lon1,
-  lat2,
-  lon2
-) {
-
-  const R = 6371000;
-
-  const dLat =
-    (lat2 - lat1) *
-    Math.PI / 180;
-
-  const dLon =
-    (lon2 - lon1) *
-    Math.PI / 180;
-
-  const a =
-    Math.sin(dLat / 2) *
-    Math.sin(dLat / 2) +
-
-    Math.cos(lat1 * Math.PI / 180) *
-    Math.cos(lat2 * Math.PI / 180) *
-
-    Math.sin(dLon / 2) *
-    Math.sin(dLon / 2);
-
-  const c =
-    2 *
-    Math.atan2(
-      Math.sqrt(a),
-      Math.sqrt(1 - a)
-    );
-
-  return R * c;
-}
-
-
-/* =====================================================
-   UPDATE TAMPILAN LOKASI
-===================================================== */
-
-function tampilkanLokasi(
-  pesan,
-  tipe
-) {
-
-  const box =
-    document.getElementById(
-      "locationStatus"
-    );
-
-  box.textContent =
-    pesan;
-
-  box.className =
-    "location-box " + tipe;
-}
-
-
-/* =====================================================
-   CEK LOKASI
-===================================================== */
-
-function cekLokasi() {
-
-  if (!navigator.geolocation) {
-
-    tampilkanLokasi(
-      "❌ Browser tidak mendukung GPS.",
-      "location-error"
-    );
-
-    return;
-  }
-
-
-  tampilkanLokasi(
-    "📍 Memeriksa lokasi GPS...",
-    "location-loading"
-  );
-
-
-  navigator.geolocation.getCurrentPosition(
-
-    function(position) {
-
-      const latitude =
-        position.coords.latitude;
-
-      const longitude =
-        position.coords.longitude;
-
-      const accuracy =
-        position.coords.accuracy;
-
-
-      const jarak =
-        hitungJarak(
-          latitude,
-          longitude,
-          SEKOLAH_LAT,
-          SEKOLAH_LNG
-        );
-
-
-      console.log(
-        "Latitude:",
-        latitude
-      );
-
-      console.log(
-        "Longitude:",
-        longitude
-      );
-
-      console.log(
-        "Akurasi:",
-        accuracy
-      );
-
-      console.log(
-        "Jarak:",
-        jarak
-      );
-
-
-      /*
-        Simpan lokasi yang sudah diperiksa
-      */
-
-      lokasiSaatIni = {
-        latitude: latitude,
-        longitude: longitude,
-        accuracy: accuracy,
-        jarak: jarak
-      };
-
-
-      /*
-        GPS terlalu tidak akurat
-      */
-
-      if (
-        accuracy >
-        BATAS_AKURASI
-      ) {
-
-        tampilkanLokasi(
-          "⚠️ GPS kurang akurat. Akurasi: " +
-          Math.round(accuracy) +
-          " meter.",
-          "location-error"
-        );
-
-        tombolAbsensi(false);
-
-        return;
-      }
-
-
-      /*
-        Di luar sekolah
-      */
-
-      if (
-        jarak >
-        BATAS_JARAK
-      ) {
-
-        tampilkanLokasi(
-          "❌ Anda berada di luar area sekolah. Jarak: " +
-          Math.round(jarak) +
-          " meter.",
-          "location-error"
-        );
-
-        tombolAbsensi(false);
-
-        return;
-      }
-
-
-      /*
-        LOKASI VALID
-      */
-
-      tampilkanLokasi(
-        "✅ Lokasi valid. Jarak dari sekolah: " +
-        Math.round(jarak) +
-        " meter.",
-        "location-success"
-      );
-
-      tombolAbsensi(true);
-
-    },
-
-    function(error) {
-
-      console.error(error);
-
-
-      tombolAbsensi(false);
-
-
-      if (
-        error.code === 1
-      ) {
-
-        tampilkanLokasi(
-          "❌ Izin lokasi ditolak. Izinkan lokasi pada browser.",
-          "location-error"
-        );
-
-      } else if (
-        error.code === 2
-      ) {
-
-        tampilkanLokasi(
-          "❌ Lokasi tidak tersedia.",
-          "location-error"
-        );
-
-      } else {
-
-        tampilkanLokasi(
-          "❌ Gagal mendapatkan lokasi.",
-          "location-error"
-        );
-      }
-
-    },
-
-    {
-      enableHighAccuracy: true,
-      timeout: 15000,
-      maximumAge: 0
-    }
-  );
-}
-
-
-/* =====================================================
-   AKTIFKAN / MATIKAN TOMBOL
-===================================================== */
-
-function tombolAbsensi(
-  aktif
-) {
-
-  document.getElementById(
-    "cameraBtn"
-  ).disabled = !aktif;
-
-  document.getElementById(
-    "pulangBtn"
-  ).disabled = !aktif;
-}
 
 
 /* =====================================================
@@ -787,6 +503,7 @@ async function mulaiKamera() {
         },
 
         audio: false
+
       });
 
 
@@ -794,15 +511,35 @@ async function mulaiKamera() {
       stream;
 
 
+    tombolAbsensi(true);
+
+
   } catch (error) {
 
+    console.error(error);
+
     tampilkanStatus(
-      "Kamera tidak bisa dibuka. Izinkan akses kamera pada browser.",
+      "❌ Kamera tidak bisa dibuka. Izinkan akses kamera pada browser.",
       "error"
     );
 
-    console.error(error);
   }
+}
+
+
+/* =====================================================
+   AKTIFKAN TOMBOL
+===================================================== */
+
+function tombolAbsensi(aktif) {
+
+  document.getElementById(
+    "cameraBtn"
+  ).disabled = !aktif;
+
+  document.getElementById(
+    "pulangBtn"
+  ).disabled = !aktif;
 }
 
 
@@ -824,9 +561,7 @@ function ambilFoto() {
     ).value;
 
 
-  if (
-    nama.length < 2
-  ) {
+  if (nama.length < 2) {
 
     tampilkanStatus(
       "Masukkan nama terlebih dahulu.",
@@ -848,19 +583,12 @@ function ambilFoto() {
   }
 
 
-  if (!lokasiValid()) {
-    return;
-  }
-
-
   if (sedangMengirim) {
     return;
   }
 
 
-  ambilFotoDariKamera(
-    "masuk"
-  );
+  ambilFotoDariKamera("masuk");
 }
 
 
@@ -882,9 +610,7 @@ function ambilFotoPulang() {
     ).value;
 
 
-  if (
-    nama.length < 2
-  ) {
+  if (nama.length < 2) {
 
     tampilkanStatus(
       "Masukkan nama terlebih dahulu.",
@@ -906,74 +632,12 @@ function ambilFotoPulang() {
   }
 
 
-  if (!lokasiValid()) {
-    return;
-  }
-
-
   if (sedangMengirim) {
     return;
   }
 
 
-  ambilFotoDariKamera(
-    "pulang"
-  );
-}
-
-
-/* =====================================================
-   CEK LOKASI SEBELUM ABSEN
-===================================================== */
-
-function lokasiValid() {
-
-  if (!lokasiSaatIni) {
-
-    tampilkanStatus(
-      "❌ Lokasi belum terverifikasi.",
-      "error"
-    );
-
-    cekLokasi();
-
-    return false;
-  }
-
-
-  if (
-    lokasiSaatIni.jarak >
-    BATAS_JARAK
-  ) {
-
-    tampilkanStatus(
-      "❌ Anda berada di luar area sekolah.",
-      "error"
-    );
-
-    cekLokasi();
-
-    return false;
-  }
-
-
-  if (
-    lokasiSaatIni.accuracy >
-    BATAS_AKURASI
-  ) {
-
-    tampilkanStatus(
-      "❌ Akurasi GPS terlalu rendah.",
-      "error"
-    );
-
-    cekLokasi();
-
-    return false;
-  }
-
-
-  return true;
+  ambilFotoDariKamera("pulang");
 }
 
 
@@ -981,9 +645,7 @@ function lokasiValid() {
    AMBIL FOTO
 ===================================================== */
 
-function ambilFotoDariKamera(
-  jenis
-) {
+function ambilFotoDariKamera(jenis) {
 
   const context =
     canvas.getContext("2d");
@@ -996,10 +658,7 @@ function ambilFotoDariKamera(
     video.videoHeight;
 
 
-  if (
-    !width ||
-    !height
-  ) {
+  if (!width || !height) {
 
     tampilkanStatus(
       "Kamera belum siap. Tunggu sebentar lalu coba lagi.",
@@ -1035,24 +694,21 @@ function ambilFotoDariKamera(
 
 
       preview.src =
-        URL.createObjectURL(
-          blob
-        );
+        URL.createObjectURL(blob);
 
 
       preview.style.display =
         "block";
 
 
-      kirimAbsensi(
-        jenis
-      );
+      kirimAbsensi(jenis);
 
     },
 
     "image/jpeg",
 
     0.8
+
   );
 }
 
@@ -1061,9 +717,7 @@ function ambilFotoDariKamera(
    KIRIM ABSENSI
 ===================================================== */
 
-async function kirimAbsensi(
-  jenis
-) {
+async function kirimAbsensi(jenis) {
 
   const nama =
     document.getElementById(
@@ -1110,103 +764,41 @@ async function kirimAbsensi(
   }
 
 
-  /*
-     CEK LOKASI SEKALI LAGI
-  */
-
-  if (!lokasiValid()) {
-    return;
-  }
+  sedangMengirim = true;
 
 
-  sedangMengirim =
-    true;
-
-
-  document.getElementById(
-    "cameraBtn"
-  ).disabled = true;
-
-
-  document.getElementById(
-    "pulangBtn"
-  ).disabled = true;
+  tombolAbsensi(false);
 
 
   tampilkanStatus(
-    "📍 Memeriksa lokasi dan mengirim absensi...",
+    "📤 Mengirim absensi...",
     "success"
   );
 
 
   try {
 
-    /*
-       AMBIL DATA GPS TERBARU
-    */
-
-    const position =
-      await dapatkanLokasiTerbaru();
-
-
-    const latitude =
-      position.coords.latitude;
-
-    const longitude =
-      position.coords.longitude;
-
-    const accuracy =
-      position.coords.accuracy;
-
-
-    const jarak =
-      hitungJarak(
-        latitude,
-        longitude,
-        SEKOLAH_LAT,
-        SEKOLAH_LNG
-      );
-
-
-    /*
-       JANGAN LANJUT JIKA DI LUAR RADIUS
-    */
-
-    if (
-      jarak >
-      BATAS_JARAK
-    ) {
-
-      throw new Error(
-        "Anda berada di luar area sekolah. Jarak: " +
-        Math.round(jarak) +
-        " meter."
-      );
-    }
-
-
-    /*
-       JANGAN LANJUT JIKA GPS TIDAK AKURAT
-    */
-
-    if (
-      accuracy >
-      BATAS_AKURASI
-    ) {
-
-      throw new Error(
-        "GPS kurang akurat. Akurasi: " +
-        Math.round(accuracy) +
-        " meter."
-      );
-    }
-
-
-    /*
-       NAMA FILE
-    */
+    /* ================================================
+       AMBIL WAKTU WIB
+    ================================================ */
 
     const waktu =
+      waktuWIB();
+
+
+    const tanggal =
+      waktu.tanggal;
+
+
+    const jam =
+      waktu.jam;
+
+
+    /* ================================================
+       NAMA FILE
+    ================================================ */
+
+    const timestamp =
       Date.now();
 
 
@@ -1223,15 +815,6 @@ async function kirimAbsensi(
         );
 
 
-    const tanggal =
-      new Date()
-        .toISOString()
-        .slice(
-          0,
-          10
-        );
-
-
     const filePath =
       tanggal +
       "/" +
@@ -1239,13 +822,13 @@ async function kirimAbsensi(
       "-" +
       jenis +
       "-" +
-      waktu +
+      timestamp +
       ".jpg";
 
 
-    /*
+    /* ================================================
        UPLOAD FOTO
-    */
+    ================================================ */
 
     const {
       error: uploadError
@@ -1266,17 +849,14 @@ async function kirimAbsensi(
         );
 
 
-    if (
-      uploadError
-    ) {
-
+    if (uploadError) {
       throw uploadError;
     }
 
 
-    /*
-       SIMPAN ABSENSI + LOKASI
-    */
+    /* ================================================
+       SIMPAN DATA ABSENSI
+    ================================================ */
 
     const {
       error: insertError
@@ -1291,32 +871,26 @@ async function kirimAbsensi(
           kelas:
             kelas,
 
+          tanggal:
+            tanggal,
+
+          jam:
+            jam,
+
           jenis:
             jenis,
 
           foto_path:
-            filePath,
-
-          latitude:
-            latitude,
-
-          longitude:
-            longitude,
-
-          accuracy:
-            accuracy
+            filePath
 
         });
 
 
-    /*
-       JIKA DATABASE GAGAL,
-       HAPUS FOTO
-    */
+    /* ================================================
+       JIKA DATABASE GAGAL
+    ================================================ */
 
-    if (
-      insertError
-    ) {
+    if (insertError) {
 
       await supabaseClient
         .storage
@@ -1325,40 +899,36 @@ async function kirimAbsensi(
           filePath
         ]);
 
-
       throw insertError;
     }
 
 
-    /*
+    /* ================================================
        BERHASIL
-    */
+    ================================================ */
 
-    if (
-      jenis === "masuk"
-    ) {
+    if (jenis === "masuk") {
 
       tampilkanStatus(
-        "✅ Absen masuk berhasil!",
+        "✅ Absen masuk berhasil pada " + jam + " WIB",
         "success"
       );
 
     } else {
 
       tampilkanStatus(
-        "✅ Absen pulang berhasil!",
+        "✅ Absen pulang berhasil pada " + jam + " WIB",
         "success"
       );
 
     }
 
 
-    /*
+    /* ================================================
        RESET
-    */
+    ================================================ */
 
-    fotoBlob =
-      null;
+    fotoBlob = null;
 
 
     preview.style.display =
@@ -1375,28 +945,14 @@ async function kirimAbsensi(
     ).value = "";
 
 
-    /*
-       CEK LOKASI LAGI
-    */
-
-    cekLokasi();
-
-
   } catch (error) {
 
-    console.error(
-      error
-    );
+    console.error(error);
 
 
-    if (
-      error.code ===
-      "23505"
-    ) {
+    if (error.code === "23505") {
 
-      if (
-        jenis === "masuk"
-      ) {
+      if (jenis === "masuk") {
 
         tampilkanStatus(
           "⚠️ Anda sudah melakukan absen masuk hari ini.",
@@ -1409,15 +965,16 @@ async function kirimAbsensi(
           "⚠️ Anda sudah melakukan absen pulang hari ini.",
           "error"
         );
+
       }
 
     } else {
 
       tampilkanStatus(
-        "❌ " +
-        error.message,
+        "❌ " + error.message,
         "error"
       );
+
     }
 
   }
@@ -1427,58 +984,7 @@ async function kirimAbsensi(
     false;
 
 
-  /*
-     Tombol akan aktif lagi
-     jika lokasi valid
-  */
-
-  if (
-    lokasiSaatIni &&
-    lokasiSaatIni.jarak <=
-      BATAS_JARAK &&
-    lokasiSaatIni.accuracy <=
-      BATAS_AKURASI
-  ) {
-
-    tombolAbsensi(true);
-
-  } else {
-
-    tombolAbsensi(false);
-  }
-}
-
-
-/* =====================================================
-   DAPATKAN GPS TERBARU
-===================================================== */
-
-function dapatkanLokasiTerbaru() {
-
-  return new Promise(
-    function(resolve, reject) {
-
-      navigator.geolocation.getCurrentPosition(
-
-        resolve,
-
-        reject,
-
-        {
-          enableHighAccuracy:
-            true,
-
-          timeout:
-            15000,
-
-          maximumAge:
-            0
-        }
-
-      );
-
-    }
-  );
+  tombolAbsensi(true);
 }
 
 
@@ -1513,9 +1019,8 @@ function tampilkanStatus(
 
 mulaiKamera();
 
-cekLokasi();
-
 </script>
 
 </body>
 </html>
+```
