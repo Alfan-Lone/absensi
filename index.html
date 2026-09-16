@@ -849,7 +849,12 @@ async function mulaiKamera() {
 
 
     tombolAbsensi(true);
-    document.getElementById("status").style.display = "none";
+
+    // Kamera berhasil aktif, hapus peringatan/error sebelumnya
+    const status = document.getElementById("status");
+    status.style.display = "none";
+    status.className = "status";
+
 
   } catch (error) {
 
