@@ -6,97 +6,210 @@
 
   <title>ABSENSI EKSKUL INFORMATIKA</title>
 
-  <!-- Supabase -->
+  <!-- SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+    /* ========================================
+       RESET
+    ======================================== */
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
     }
+
+
+    /* ========================================
+       BODY
+    ======================================== */
 
     body {
       min-height: 100vh;
+
       background:
-        linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.65)),
-        url("logo.pngf") center/cover fixed;
+        linear-gradient(
+          rgba(0, 0, 0, 0.58),
+          rgba(0, 0, 0, 0.68)
+        ),
+        url("logo.png");
+
+      background-position: center;
+      background-size: cover;
+      background-attachment: fixed;
+
       display: flex;
       justify-content: center;
       align-items: center;
+
       padding: 20px;
     }
+
+
+    /* ========================================
+       CONTAINER
+    ======================================== */
 
     .container {
       width: 100%;
       max-width: 480px;
-      background: rgba(255,255,255,.96);
-      border-radius: 20px;
+
+      background: rgba(255, 255, 255, 0.96);
+
+      border-radius: 22px;
+
       padding: 25px;
-      box-shadow: 0 10px 35px rgba(0,0,0,.35);
+
+      box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.4);
+
+      animation: muncul 0.5s ease;
     }
+
+    @keyframes muncul {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+
+    /* ========================================
+       LOGO
+    ======================================== */
 
     .logo {
       width: 90px;
       height: 90px;
-      object-fit: cover;
-      border-radius: 50%;
+
+      object-fit: contain;
+
       display: block;
+
       margin: 0 auto 12px;
-      border: 4px solid #0b8f4d;
+
+      border-radius: 50%;
+
+      border: 3px solid #20ff72;
+
+      background: white;
+
+      box-shadow:
+        0 0 8px #20ff72,
+        0 0 20px rgba(32, 255, 114, 0.6);
     }
+
+
+    /* ========================================
+       JUDUL
+    ======================================== */
 
     h1 {
       text-align: center;
+
       font-size: 23px;
+
       color: #087a40;
+
       margin-bottom: 5px;
     }
 
     .subtitle {
       text-align: center;
+
       color: #666;
-      margin-bottom: 20px;
+
+      font-size: 14px;
+
+      margin-bottom: 22px;
     }
+
+
+    /* ========================================
+       LABEL
+    ======================================== */
 
     label {
       display: block;
+
       font-weight: bold;
-      margin-bottom: 7px;
+
       color: #333;
+
+      margin-bottom: 7px;
     }
+
+
+    /* ========================================
+       INPUT & SELECT
+    ======================================== */
 
     input,
     select {
       width: 100%;
+
       padding: 13px;
+
       border: 2px solid #ddd;
-      border-radius: 10px;
-      margin-bottom: 15px;
+
+      border-radius: 11px;
+
+      margin-bottom: 16px;
+
       font-size: 15px;
+
       outline: none;
+
+      background: white;
+
+      transition: 0.2s;
     }
 
     input:focus,
     select:focus {
-      border-color: #0b8f4d;
+      border-color: #19e968;
+
+      box-shadow:
+        0 0 8px rgba(25, 233, 104, 0.3);
     }
+
+
+    /* ========================================
+       CAMERA
+    ======================================== */
 
     .camera-box {
       width: 100%;
-      background: #111;
+
+      background: #080808;
+
       border-radius: 15px;
+
       overflow: hidden;
-      margin-bottom: 12px;
+
+      margin-bottom: 10px;
+
       position: relative;
+
+      box-shadow:
+        inset 0 0 15px rgba(0, 0, 0, 0.8);
     }
 
     video {
       width: 100%;
+
       display: block;
 
-      /* TIDAK MIRROR */
+      /*
+        FOTO / VIDEO TIDAK MIRROR
+      */
       transform: scaleX(1);
     }
 
@@ -104,577 +217,1213 @@
       display: none;
     }
 
+
+    /* ========================================
+       STATUS KAMERA
+    ======================================== */
+
     .camera-status {
       text-align: center;
-      padding: 8px;
+
+      padding: 9px;
+
       background: #f1f1f1;
-      border-radius: 8px;
+
+      border-radius: 9px;
+
       margin-bottom: 12px;
+
       font-size: 14px;
+
+      color: #666;
     }
+
+
+    /* ========================================
+       BUTTON UMUM
+    ======================================== */
 
     .btn {
       width: 100%;
+
       border: none;
+
       padding: 14px;
-      border-radius: 10px;
+
+      border-radius: 11px;
+
       color: white;
+
       font-size: 16px;
+
       font-weight: bold;
+
       cursor: pointer;
+
       margin-top: 8px;
+
+      transition:
+        transform 0.12s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease;
     }
 
+
+    /* ========================================
+       BUTTON CAMERA
+    ======================================== */
+
     .btn-camera {
-      background: #555;
+      background: #444;
+
+      box-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.25);
     }
 
     .btn-camera:hover {
       background: #333;
     }
 
-    .btn-masuk {
-      background: #087f43;
+    .btn-camera:active {
+      transform: scale(0.96);
     }
 
-    .btn-masuk:hover {
-      background: #066b38;
+
+    /* ========================================
+       BUTTON ABSEN NEON
+    ======================================== */
+
+    .btn-absen {
+
+      width: 100%;
+
+      padding: 15px;
+
+      margin-top: 14px;
+
+      border: 2px solid #39ff88;
+
+      border-radius: 12px;
+
+      background: #06190e;
+
+      color: #39ff88;
+
+      font-size: 19px;
+
+      font-weight: 900;
+
+      letter-spacing: 1.5px;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 0 5px #39ff88,
+        0 0 12px rgba(57, 255, 136, 0.7),
+        0 0 25px rgba(57, 255, 136, 0.35),
+        inset 0 0 10px rgba(57, 255, 136, 0.12);
+
+      transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease,
+        background 0.12s ease;
     }
 
-    .btn-pulang {
-      background: #d62828;
+
+    /* Hover */
+
+    .btn-absen:not(:disabled):hover {
+
+      background: #0a2c18;
+
+      box-shadow:
+        0 0 7px #39ff88,
+        0 0 18px #39ff88,
+        0 0 35px rgba(57, 255, 136, 0.55),
+        inset 0 0 15px rgba(57, 255, 136, 0.2);
+
+      transform: translateY(-2px);
     }
 
-    .btn-pulang:hover {
-      background: #b51f1f;
+
+    /* Saat disentuh */
+
+    .btn-absen:not(:disabled):active {
+
+      transform:
+        scale(0.93)
+        translateY(3px);
+
+      background: #0d3d21;
+
+      box-shadow:
+        0 0 8px #39ff88,
+        0 0 25px #39ff88,
+        0 0 45px rgba(57, 255, 136, 0.7),
+        inset 0 0 20px rgba(57, 255, 136, 0.3);
     }
+
+
+    /* ========================================
+       ANIMASI TOMBOL
+    ======================================== */
+
+    .btn-absen.press {
+
+      animation:
+        tombolAbsen 0.4s ease;
+    }
+
+    @keyframes tombolAbsen {
+
+      0% {
+        transform: scale(1);
+      }
+
+      25% {
+        transform:
+          scale(0.91)
+          rotate(-1deg);
+      }
+
+      45% {
+        transform:
+          scale(1.05)
+          rotate(1deg);
+      }
+
+      65% {
+        transform:
+          scale(0.97)
+          rotate(-0.5deg);
+      }
+
+      82% {
+        transform:
+          scale(1.02);
+      }
+
+      100% {
+        transform:
+          scale(1);
+      }
+    }
+
+
+    /* ========================================
+       BUTTON DISABLED
+    ======================================== */
 
     .btn:disabled {
-      opacity: .5;
+
+      opacity: 0.4;
+
       cursor: not-allowed;
+
+      transform: none;
+
+      box-shadow:
+        0 0 3px rgba(57, 255, 136, 0.25);
     }
+
+
+    /* ========================================
+       PREVIEW FOTO
+    ======================================== */
 
     #preview {
+
       display: none;
+
       width: 100%;
+
       border-radius: 12px;
-      margin-top: 10px;
+
+      margin-top: 12px;
+
+      border: 2px solid #20d86a;
+
+      box-shadow:
+        0 0 10px rgba(32, 216, 106, 0.35);
     }
 
+
+    /* ========================================
+       MESSAGE
+    ======================================== */
+
     .message {
+
       text-align: center;
+
       margin-top: 15px;
+
       padding: 12px;
+
       border-radius: 10px;
+
       display: none;
+
       font-weight: bold;
+
+      font-size: 14px;
     }
 
     .success {
+
       display: block;
+
       background: #d8f5e5;
+
       color: #087a40;
     }
 
     .error {
+
       display: block;
+
       background: #ffe0e0;
+
       color: #b00020;
     }
 
     .loading {
+
       display: block;
+
       background: #fff1c7;
+
       color: #795900;
     }
 
+
+    /* ========================================
+       INFO
+    ======================================== */
+
     .info {
+
       margin-top: 15px;
-      padding: 10px;
+
+      padding: 11px;
+
       border-radius: 10px;
+
       background: #eef7ff;
+
       color: #24516e;
+
       font-size: 13px;
+
       text-align: center;
+
+      line-height: 1.5;
     }
+
+
+    /* ========================================
+       HP
+    ======================================== */
+
+    @media (max-width: 500px) {
+
+      body {
+        padding: 12px;
+      }
+
+      .container {
+        padding: 20px;
+
+        border-radius: 18px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .logo {
+        width: 78px;
+        height: 78px;
+      }
+    }
+
   </style>
 </head>
 
+
 <body>
 
-<div class="container">
+  <div class="container">
 
-  <img src="logo.png" class="logo" alt="Logo Sekolah">
+    <!-- ======================================
+         LOGO
+    ======================================= -->
 
-  <h1>ABSENSI EKSKUL INFORMATIKA</h1>
-  <div class="subtitle">Silakan isi data dan lakukan selfie</div>
+    <img
+      src="logo.png"
+      class="logo"
+      alt="Logo Sekolah"
+    >
 
-  <label for="nama">Nama Lengkap</label>
-  <input
-    type="text"
-    id="nama"
-    placeholder="Masukkan nama lengkap"
-    autocomplete="off"
-  >
 
-  <label for="kelas">Kelas</label>
-  <select id="kelas">
-    <option value="">-- Pilih Kelas --</option>
-    <option value="X">X</option>
-    <option value="XI">XI</option>
-    <option value="XII">XII</option>
-  </select>
+    <!-- ======================================
+         JUDUL
+    ======================================= -->
 
-  <label>Foto Selfie</label>
+    <h1>
+      ABSENSI EKSKUL INFORMATIKA
+    </h1>
 
-  <div class="camera-box">
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas"></canvas>
+    <div class="subtitle">
+      Silakan isi data dan lakukan selfie
+    </div>
+
+
+    <!-- ======================================
+         NAMA
+    ======================================= -->
+
+    <label for="nama">
+      Nama Lengkap
+    </label>
+
+    <input
+      type="text"
+      id="nama"
+      placeholder="Masukkan nama lengkap"
+      autocomplete="off"
+    >
+
+
+    <!-- ======================================
+         KELAS
+    ======================================= -->
+
+    <label for="kelas">
+      Kelas
+    </label>
+
+    <select id="kelas">
+
+      <option value="">
+        -- Pilih Kelas --
+      </option>
+
+      <option value="X">
+        X
+      </option>
+
+      <option value="XI">
+        XI
+      </option>
+
+      <option value="XII">
+        XII
+      </option>
+
+    </select>
+
+
+    <!-- ======================================
+         KAMERA
+    ======================================= -->
+
+    <label>
+      Foto Selfie
+    </label>
+
+    <div class="camera-box">
+
+      <video
+        id="video"
+        autoplay
+        playsinline
+      ></video>
+
+      <canvas id="canvas"></canvas>
+
+    </div>
+
+
+    <!-- STATUS KAMERA -->
+
+    <div
+      id="cameraStatus"
+      class="camera-status"
+    >
+      Kamera belum diaktifkan
+    </div>
+
+
+    <!-- ======================================
+         AKTIFKAN KAMERA
+    ======================================= -->
+
+    <button
+      class="btn btn-camera"
+      id="cameraBtn"
+      onclick="startCamera()"
+    >
+      📷 AKTIFKAN KAMERA
+    </button>
+
+
+    <!-- ======================================
+         AMBIL FOTO
+    ======================================= -->
+
+    <button
+      class="btn btn-camera"
+      id="takePhotoBtn"
+      onclick="takePhoto()"
+      disabled
+    >
+      📸 AMBIL FOTO
+    </button>
+
+
+    <!-- ======================================
+         PREVIEW
+    ======================================= -->
+
+    <img
+      id="preview"
+      alt="Preview Foto"
+    >
+
+
+    <!-- ======================================
+         SATU TOMBOL ABSEN
+    ======================================= -->
+
+    <button
+      class="btn btn-absen"
+      id="absenBtn"
+      onclick="submitAbsensi()"
+      disabled
+    >
+      ⚡ ABSEN
+    </button>
+
+
+    <!-- ======================================
+         PESAN
+    ======================================= -->
+
+    <div
+      id="message"
+      class="message"
+    ></div>
+
+
+    <!-- ======================================
+         INFO
+    ======================================= -->
+
+    <div class="info">
+
+      📸 Foto digunakan untuk keperluan absensi.
+      <br>
+
+      🔒 Data disimpan ke sistem absensi sekolah.
+
+    </div>
+
   </div>
 
-  <div id="cameraStatus" class="camera-status">
-    Kamera belum diaktifkan
-  </div>
 
-  <button class="btn btn-camera" id="cameraBtn" onclick="startCamera()">
-    📷 AKTIFKAN KAMERA
-  </button>
+  <script>
 
-  <button
-    class="btn btn-camera"
-    id="takePhotoBtn"
-    onclick="takePhoto()"
-    disabled
-  >
-    📸 AMBIL FOTO
-  </button>
+    // ==================================================
+    // SUPABASE
+    // ==================================================
 
-  <img id="preview" alt="Preview Foto">
+    const SUPABASE_URL =
+      "https://prcnxtzhukfopcfzyczm.supabase.co";
 
-  <button
-    class="btn btn-masuk"
-    id="masukBtn"
-    onclick="submitAbsensi('masuk')"
-    disabled
-  >
-    🟢 ABSEN MASUK
-  </button>
+    const SUPABASE_KEY =
+      "sb_publishable_wUZkF_KZgqDmhlVwdOAKRA_PkmZQ920";
 
-  <button
-    class="btn btn-pulang"
-    id="pulangBtn"
-    onclick="submitAbsensi('pulang')"
-    disabled
-  >
-    🔴 ABSEN PULANG
-  </button>
-
-  <div id="message" class="message"></div>
-
-  <div class="info">
-    📸 Foto digunakan untuk keperluan absensi.<br>
-    🔒 Data disimpan ke sistem absensi sekolah.
-  </div>
-
-</div>
+    const supabaseClient =
+      supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
 
 
-<script>
-  // ==========================================
-  // KONFIGURASI SUPABASE
-  // ==========================================
+    // ==================================================
+    // ELEMENT
+    // ==================================================
 
-  const SUPABASE_URL =
-    "https://prcnxtzhukfopcfzyczm.supabase.co";
+    const video =
+      document.getElementById("video");
 
-  const SUPABASE_KEY =
-    "sb_publishable_wUZkF_KZgqDmhlVwdOAKRA_PkmZQ920";
+    const canvas =
+      document.getElementById("canvas");
 
-  const supabaseClient =
-    supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
+    const preview =
+      document.getElementById("preview");
 
+    const namaInput =
+      document.getElementById("nama");
 
-  // ==========================================
-  // ELEMENT
-  // ==========================================
+    const kelasInput =
+      document.getElementById("kelas");
 
-  const video = document.getElementById("video");
-  const canvas = document.getElementById("canvas");
-  const preview = document.getElementById("preview");
+    const cameraBtn =
+      document.getElementById("cameraBtn");
 
-  const namaInput = document.getElementById("nama");
-  const kelasInput = document.getElementById("kelas");
+    const takePhotoBtn =
+      document.getElementById("takePhotoBtn");
 
-  const cameraBtn = document.getElementById("cameraBtn");
-  const takePhotoBtn = document.getElementById("takePhotoBtn");
+    const absenBtn =
+      document.getElementById("absenBtn");
 
-  const masukBtn = document.getElementById("masukBtn");
-  const pulangBtn = document.getElementById("pulangBtn");
+    const cameraStatus =
+      document.getElementById("cameraStatus");
 
-  const cameraStatus = document.getElementById("cameraStatus");
-  const message = document.getElementById("message");
-
-  let stream = null;
-  let photoBlob = null;
+    const message =
+      document.getElementById("message");
 
 
-  // ==========================================
-  // START CAMERA
-  // ==========================================
+    // ==================================================
+    // VARIABLES
+    // ==================================================
 
-  async function startCamera() {
+    let stream = null;
 
-    try {
+    let photoBlob = null;
 
-      message.className = "message";
-      message.textContent = "";
 
-      if (!navigator.mediaDevices ||
-          !navigator.mediaDevices.getUserMedia) {
+    // ==================================================
+    // AKTIFKAN KAMERA
+    // ==================================================
+
+    async function startCamera() {
+
+      try {
+
+        message.className =
+          "message";
+
+        message.textContent = "";
+
+
+        if (
+          !navigator.mediaDevices ||
+          !navigator.mediaDevices.getUserMedia
+        ) {
+
+          showMessage(
+            "Browser tidak mendukung kamera.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        // Hentikan kamera lama
+        if (stream) {
+
+          stream
+            .getTracks()
+            .forEach(
+              track => track.stop()
+            );
+        }
+
+
+        // Minta kamera
+        stream =
+          await navigator.mediaDevices
+            .getUserMedia({
+
+              video: {
+
+                facingMode: "user",
+
+                width: {
+                  ideal: 1280
+                },
+
+                height: {
+                  ideal: 720
+                }
+
+              },
+
+              audio: false
+
+            });
+
+
+        video.srcObject =
+          stream;
+
+
+        cameraStatus.textContent =
+          "🟢 Kamera aktif";
+
+        cameraStatus.style.color =
+          "#087a40";
+
+
+        cameraBtn.textContent =
+          "🔄 KAMERA AKTIF";
+
+
+        takePhotoBtn.disabled =
+          false;
+
+
+      } catch (error) {
+
+        console.error(error);
+
+
+        cameraStatus.textContent =
+          "🔴 Kamera tidak dapat digunakan";
+
+        cameraStatus.style.color =
+          "#b00020";
+
 
         showMessage(
-          "Browser tidak mendukung kamera.",
+          "Kamera belum diizinkan. Silakan izinkan akses kamera pada browser lalu tekan tombol kamera lagi.",
+          "error"
+        );
+
+      }
+
+    }
+
+
+    // ==================================================
+    // AMBIL FOTO
+    // ==================================================
+
+    function takePhoto() {
+
+      if (!stream) {
+
+        showMessage(
+          "Aktifkan kamera terlebih dahulu.",
           "error"
         );
 
         return;
       }
 
-      // Kalau kamera sebelumnya aktif
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
 
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "user",
-          width: {
-            ideal: 1280
-          },
-          height: {
-            ideal: 720
-          }
-        },
-        audio: false
-      });
-
-      video.srcObject = stream;
-
-      cameraStatus.textContent =
-        "🟢 Kamera aktif";
-
-      cameraStatus.style.color = "#087a40";
-
-      cameraBtn.textContent =
-        "🔄 KAMERA AKTIF";
-
-      takePhotoBtn.disabled = false;
-
-    } catch (error) {
-
-      console.error(error);
-
-      cameraStatus.textContent =
-        "🔴 Kamera tidak dapat digunakan";
-
-      cameraStatus.style.color = "#b00020";
-
-      showMessage(
-        "Kamera belum diizinkan. Silakan izinkan akses kamera pada browser lalu tekan tombol kamera lagi.",
-        "error"
-      );
-    }
-  }
-
-
-  // ==========================================
-  // TAKE PHOTO
-  // ==========================================
-
-  function takePhoto() {
-
-    if (!stream) {
-
-      showMessage(
-        "Aktifkan kamera terlebih dahulu.",
-        "error"
-      );
-
-      return;
-    }
-
-    if (!video.videoWidth || !video.videoHeight) {
-
-      showMessage(
-        "Kamera belum siap. Tunggu sebentar lalu coba lagi.",
-        "error"
-      );
-
-      return;
-    }
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    const ctx = canvas.getContext("2d");
-
-    /*
-      FOTO TIDAK DI-MIRROR.
-      Tidak menggunakan scale(-1, 1).
-    */
-
-    ctx.drawImage(
-      video,
-      0,
-      0,
-      canvas.width,
-      canvas.height
-    );
-
-    canvas.toBlob(
-      function(blob) {
-
-        photoBlob = blob;
-
-        preview.src =
-          URL.createObjectURL(blob);
-
-        preview.style.display = "block";
-
-        masukBtn.disabled = false;
-        pulangBtn.disabled = false;
+      if (
+        !video.videoWidth ||
+        !video.videoHeight
+      ) {
 
         showMessage(
-          "Foto berhasil diambil. Silakan pilih jenis absensi.",
-          "success"
+          "Kamera belum siap. Tunggu sebentar lalu coba lagi.",
+          "error"
         );
 
-      },
-      "image/jpeg",
-      0.85
-    );
-  }
+        return;
+      }
 
 
-  // ==========================================
-  // SUBMIT ABSENSI
-  // ==========================================
+      // Ukuran canvas mengikuti kamera
 
-  async function submitAbsensi(jenis) {
+      canvas.width =
+        video.videoWidth;
 
-    const nama =
-      namaInput.value.trim();
+      canvas.height =
+        video.videoHeight;
 
-    const kelas =
-      kelasInput.value;
 
-    if (!nama) {
+      const ctx =
+        canvas.getContext("2d");
 
-      showMessage(
-        "Nama lengkap wajib diisi.",
-        "error"
+
+      /*
+        PENTING:
+
+        Tidak memakai scale(-1,1)
+
+        sehingga hasil foto TIDAK MIRROR.
+      */
+
+      ctx.drawImage(
+
+        video,
+
+        0,
+        0,
+
+        canvas.width,
+        canvas.height
+
       );
 
-      namaInput.focus();
 
-      return;
-    }
+      // Convert ke JPG
 
-    if (!kelas) {
+      canvas.toBlob(
 
-      showMessage(
-        "Silakan pilih kelas.",
-        "error"
-      );
+        function(blob) {
 
-      kelasInput.focus();
-
-      return;
-    }
-
-    if (!photoBlob) {
-
-      showMessage(
-        "Silakan ambil foto terlebih dahulu.",
-        "error"
-      );
-
-      return;
-    }
-
-    masukBtn.disabled = true;
-    pulangBtn.disabled = true;
-
-    showMessage(
-      "⏳ Mengirim absensi...",
-      "loading"
-    );
-
-    try {
-
-      const sekarang = new Date();
-
-      const tanggal =
-        sekarang.toLocaleDateString(
-          "en-CA",
-          {
-            timeZone: "Asia/Jakarta"
-          }
-        );
-
-      const jam =
-        sekarang.toLocaleTimeString(
-          "en-GB",
-          {
-            timeZone: "Asia/Jakarta",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit"
-          }
-        );
-
-      // Nama file foto
-      const safeName =
-        nama
-          .replace(/[^a-zA-Z0-9]/g, "_")
-          .toLowerCase();
-
-      const timestamp =
-        Date.now();
-
-      const filePath =
-        `${tanggal}/${safeName}_${timestamp}.jpg`;
+          photoBlob =
+            blob;
 
 
-      // ==========================================
-      // UPLOAD FOTO KE STORAGE
-      // ==========================================
+          preview.src =
+            URL.createObjectURL(
+              blob
+            );
 
-      const uploadResult =
-        await supabaseClient.storage
-          .from("selfies")
-          .upload(
-            filePath,
-            photoBlob,
-            {
-              contentType: "image/jpeg",
-              upsert: false
-            }
+
+          preview.style.display =
+            "block";
+
+
+          // Aktifkan tombol ABSEN
+
+          absenBtn.disabled =
+            false;
+
+
+          showMessage(
+            "✅ Foto berhasil diambil. Silakan tekan tombol ABSEN.",
+            "success"
           );
 
-      if (uploadResult.error) {
-        throw uploadResult.error;
-      }
+        },
 
+        "image/jpeg",
 
-      // ==========================================
-      // SIMPAN DATA ABSEN
-      // ==========================================
+        0.85
 
-      const insertResult =
-        await supabaseClient
-          .from("absensi")
-          .insert({
-
-            tanggal: tanggal,
-
-            jam: jam,
-
-            nama: nama,
-
-            kelas: kelas,
-
-            jenis: jenis,
-
-            foto_path: filePath
-
-          });
-
-
-      if (insertResult.error) {
-
-        // Kalau insert gagal, foto yang sudah
-        // diupload kita coba hapus kembali.
-        await supabaseClient.storage
-          .from("selfies")
-          .remove([filePath]);
-
-        throw insertResult.error;
-      }
-
-
-      // ==========================================
-      // BERHASIL
-      // ==========================================
-
-      showMessage(
-        `✅ ABSEN ${jenis.toUpperCase()} BERHASIL!`,
-        "success"
       );
 
-      namaInput.value = "";
-      kelasInput.value = "";
-
-      preview.src = "";
-      preview.style.display = "none";
-
-      photoBlob = null;
-
-      masukBtn.disabled = true;
-      pulangBtn.disabled = true;
+    }
 
 
-    } catch (error) {
+    // ==================================================
+    // ABSEN
+    // ==================================================
 
-      console.error(error);
+    async function submitAbsensi() {
 
-      showMessage(
-        "❌ Gagal menyimpan absensi: " +
-        (error.message || "Terjadi kesalahan."),
-        "error"
+      // ================================================
+      // ANIMASI TOMBOL
+      // ================================================
+
+      absenBtn.classList.remove(
+        "press"
       );
 
-      masukBtn.disabled = false;
-      pulangBtn.disabled = false;
-    }
-  }
+      // Memicu ulang animasi
+
+      void absenBtn.offsetWidth;
+
+      absenBtn.classList.add(
+        "press"
+      );
 
 
-  // ==========================================
-  // MESSAGE
-  // ==========================================
+      // ================================================
+      // CEK DATA
+      // ================================================
 
-  function showMessage(text, type) {
+      const nama =
+        namaInput.value.trim();
 
-    message.textContent = text;
-
-    message.className =
-      "message " + type;
-  }
+      const kelas =
+        kelasInput.value;
 
 
-  // ==========================================
-  // STOP CAMERA SAAT HALAMAN DITUTUP
-  // ==========================================
+      if (!nama) {
 
-  window.addEventListener(
-    "beforeunload",
-    function() {
+        showMessage(
+          "Nama lengkap wajib diisi.",
+          "error"
+        );
 
-      if (stream) {
+        namaInput.focus();
 
-        stream
-          .getTracks()
-          .forEach(track => track.stop());
+        return;
+      }
+
+
+      if (!kelas) {
+
+        showMessage(
+          "Silakan pilih kelas.",
+          "error"
+        );
+
+        kelasInput.focus();
+
+        return;
+      }
+
+
+      if (!photoBlob) {
+
+        showMessage(
+          "Silakan ambil foto terlebih dahulu.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      absenBtn.disabled =
+        true;
+
+
+      showMessage(
+        "⏳ Menyimpan absensi...",
+        "loading"
+      );
+
+
+      try {
+
+        // ==============================================
+        // WAKTU INDONESIA
+        // ==============================================
+
+        const sekarang =
+          new Date();
+
+
+        const tanggal =
+          sekarang.toLocaleDateString(
+
+            "en-CA",
+
+            {
+              timeZone:
+                "Asia/Jakarta"
+            }
+
+          );
+
+
+        const jam =
+          sekarang.toLocaleTimeString(
+
+            "en-GB",
+
+            {
+
+              timeZone:
+                "Asia/Jakarta",
+
+              hour:
+                "2-digit",
+
+              minute:
+                "2-digit",
+
+              second:
+                "2-digit"
+
+            }
+
+          );
+
+
+        // ==============================================
+        // CEK ABSEN HARI INI
+        // ==============================================
+
+        const cek =
+          await supabaseClient
+
+            .from("absensi")
+
+            .select("jenis")
+
+            .eq(
+              "nama",
+              nama
+            )
+
+            .eq(
+              "tanggal",
+              tanggal
+            );
+
+
+        if (cek.error) {
+
+          throw cek.error;
+
+        }
+
+
+        // ==============================================
+        // TENTUKAN JENIS
+        // ==============================================
+
+        let jenis =
+          "masuk";
+
+
+        /*
+          Jika belum ada MASUK:
+          → MASUK
+
+          Jika sudah ada MASUK:
+          → PULANG
+        */
+
+        if (
+
+          cek.data &&
+
+          cek.data.some(
+            row =>
+              row.jenis === "masuk"
+          )
+
+        ) {
+
+          jenis =
+            "pulang";
+
+        }
+
+
+        // ==============================================
+        // NAMA FILE
+        // ==============================================
+
+        const safeName =
+          nama
+
+            .replace(
+              /[^a-zA-Z0-9]/g,
+              "_"
+            )
+
+            .toLowerCase();
+
+
+        const timestamp =
+          Date.now();
+
+
+        const filePath =
+          `${tanggal}/${safeName}_${timestamp}.jpg`;
+
+
+        // ==============================================
+        // UPLOAD FOTO
+        // ==============================================
+
+        const uploadResult =
+          await supabaseClient
+
+            .storage
+
+            .from("selfies")
+
+            .upload(
+
+              filePath,
+
+              photoBlob,
+
+              {
+
+                contentType:
+                  "image/jpeg",
+
+                upsert:
+                  false
+
+              }
+
+            );
+
+
+        if (
+          uploadResult.error
+        ) {
+
+          throw uploadResult.error;
+
+        }
+
+
+        // ==============================================
+        // SIMPAN DATA ABSEN
+        // ==============================================
+
+        const insertResult =
+          await supabaseClient
+
+            .from("absensi")
+
+            .insert({
+
+              tanggal:
+                tanggal,
+
+              jam:
+                jam,
+
+              nama:
+                nama,
+
+              kelas:
+                kelas,
+
+              jenis:
+                jenis,
+
+              foto_path:
+                filePath
+
+            });
+
+
+        // ==============================================
+        // JIKA DATABASE ERROR
+        // ==============================================
+
+        if (
+          insertResult.error
+        ) {
+
+          // Hapus foto yang sudah ter-upload
+
+          await supabaseClient
+
+            .storage
+
+            .from("selfies")
+
+            .remove([
+              filePath
+            ]);
+
+
+          throw insertResult.error;
+
+        }
+
+
+        // ==============================================
+        // BERHASIL
+        // ==============================================
+
+        showMessage(
+
+          `✅ ABSEN ${jenis.toUpperCase()} BERHASIL!`,
+
+          "success"
+
+        );
+
+
+        // Reset form
+
+        namaInput.value =
+          "";
+
+        kelasInput.value =
+          "";
+
+
+        preview.src =
+          "";
+
+        preview.style.display =
+          "none";
+
+
+        photoBlob =
+          null;
+
+
+        absenBtn.disabled =
+          true;
+
+
+      } catch (error) {
+
+        console.error(
+          error
+        );
+
+
+        showMessage(
+
+          "❌ Gagal menyimpan absensi: " +
+          (
+            error.message ||
+            "Terjadi kesalahan."
+          ),
+
+          "error"
+
+        );
+
+
+        absenBtn.disabled =
+          false;
+
       }
 
     }
-  );
 
-</script>
+
+    // ==================================================
+    // PESAN
+    // ==================================================
+
+    function showMessage(
+      text,
+      type
+    ) {
+
+      message.textContent =
+        text;
+
+      message.className =
+        "message " + type;
+
+    }
+
+
+    // ==================================================
+    // STOP CAMERA
+    // ==================================================
+
+    window.addEventListener(
+      "beforeunload",
+      function() {
+
+        if (stream) {
+
+          stream
+
+            .getTracks()
+
+            .forEach(
+              track =>
+                track.stop()
+            );
+
+        }
+
+      }
+    );
+
+  </script>
 
 </body>
 </html>
